@@ -9,7 +9,7 @@ const config = {
 			filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 	},
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({ fallback: 'index.html' }),
 		paths: {
 			base: dev ? '' : process.env.BASE_PATH ?? ''
 		}
