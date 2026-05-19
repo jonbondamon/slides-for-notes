@@ -25,3 +25,7 @@ dist/
 test*.pdf
 sample.pdf
 preview*.png
+
+# Playwright MCP screenshots
+.playwright-mcp/
+landing-*.png
