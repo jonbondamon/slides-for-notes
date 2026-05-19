@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.python-version
+
+# Node / SvelteKit
+node_modules/
+.svelte-kit/
+build/
+dist/
+.vite/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Local test artifacts
+*-notes.pdf
+*-3up.pdf
+*-all.pdf
+test*.pdf
+sample.pdf
+preview*.png
