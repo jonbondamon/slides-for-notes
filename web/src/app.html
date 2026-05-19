@@ -17,6 +17,47 @@
 			rel="stylesheet"
 		/>
 
+		<script>
+			// Polyfill for older Safari / iPadOS: pdf.js v5 uses these recent
+			// Map methods (Stage 4 TC39, only in Safari 18.5+).
+			(function () {
+				if (typeof Map !== 'undefined') {
+					if (!Map.prototype.getOrInsertComputed) {
+						Map.prototype.getOrInsertComputed = function (key, callback) {
+							if (this.has(key)) return this.get(key);
+							var value = callback(key);
+							this.set(key, value);
+							return value;
+						};
+					}
+					if (!Map.prototype.getOrInsert) {
+						Map.prototype.getOrInsert = function (key, defaultValue) {
+							if (this.has(key)) return this.get(key);
+							this.set(key, defaultValue);
+							return defaultValue;
+						};
+					}
+				}
+				if (typeof WeakMap !== 'undefined') {
+					if (!WeakMap.prototype.getOrInsertComputed) {
+						WeakMap.prototype.getOrInsertComputed = function (key, callback) {
+							if (this.has(key)) return this.get(key);
+							var value = callback(key);
+							this.set(key, value);
+							return value;
+						};
+					}
+					if (!WeakMap.prototype.getOrInsert) {
+						WeakMap.prototype.getOrInsert = function (key, defaultValue) {
+							if (this.has(key)) return this.get(key);
+							this.set(key, defaultValue);
+							return defaultValue;
+						};
+					}
+				}
+			})();
+		</script>
+
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
