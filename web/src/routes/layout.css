@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+@theme {
+	/* Editorial notebook palette */
+	--color-paper: #faf7f0;
+	--color-paper-deep: #f3eee2;
+	--color-surface: #ffffff;
+	--color-ink: #1a1814;
+	--color-ink-muted: #5f574b;
+	--color-rule: #e6dfd2;
+	--color-rule-strong: #c9bfac;
+	--color-margin: #c0392b;
+	--color-margin-faded: #d96050;
+	--color-indigo-ink: #2a3f6b;
+	--color-accent-soft: #f0e8d6;
+
+	/* Fonts */
+	--font-display: 'Fraunces', 'Iowan Old Style', 'Georgia', serif;
+	--font-sans: 'Public Sans', 'system-ui', sans-serif;
+	--font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+
+	/* Type scale */
+	--text-display: clamp(2.5rem, 6vw, 4.5rem);
+
+	/* Shadows */
+	--shadow-paper: 0 1px 0 #e6dfd2, 0 2px 8px rgba(58, 50, 38, 0.04);
+	--shadow-card: 0 1px 0 #e6dfd2, 0 8px 24px rgba(58, 50, 38, 0.06);
+}
+
+html,
+body {
+	background: var(--color-paper);
+	color: var(--color-ink);
+	font-family: var(--font-sans);
+	font-feature-settings: 'ss01', 'cv11';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	min-height: 100%;
+}
+
+body {
+	font-size: 16px;
+	line-height: 1.45;
+}
+
+/* Subtle paper grain — extremely faint */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1, 0 0 0 0 0.09, 0 0 0 0 0.07, 0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+	mix-blend-mode: multiply;
+	opacity: 0.5;
+}
+
+/* Display headings tighten optical sizing */
+.font-display {
+	font-family: var(--font-display);
+	font-optical-sizing: auto;
+	font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 0;
+	letter-spacing: -0.02em;
+	line-height: 0.95;
+}
+
+/* Touch-friendly base for iPad */
+button,
+input,
+label,
+[role='button'] {
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
