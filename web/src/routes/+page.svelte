@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { app } from '$lib/state.svelte';
+	import { app, outputFileName } from '$lib/state.svelte';
+	import { transformPdf } from '$lib/transform';
 	import DropZone from '$lib/components/DropZone.svelte';
 	import LayoutPicker from '$lib/components/LayoutPicker.svelte';
 	import Range from '$lib/components/Range.svelte';
@@ -9,7 +10,30 @@
 	import PreviewPane from '$lib/components/PreviewPane.svelte';
 
 	let advancedOpen = $state(false);
+	let downloadError = $state('');
 	const is3up = $derived(app.options.layout === '3up');
+
+	async function download() {
+		if (!app.file || app.isProcessing) return;
+		downloadError = '';
+		app.isProcessing = true;
+		try {
+			const bytes = await transformPdf(await app.file.arrayBuffer(), app.options);
+			const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = outputFileName();
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			setTimeout(() => URL.revokeObjectURL(url), 1500);
+		} catch (e) {
+			downloadError = (e as Error).message || 'Could not export PDF.';
+		} finally {
+			app.isProcessing = false;
+		}
+	}
 </script>
 
 <div class="page">
@@ -146,13 +170,27 @@
 			{/if}
 
 			<div class="action">
-				<button class="download" type="button" disabled={!app.file}>
-					<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-						<path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-					</svg>
-					Download formatted PDF
+				<button
+					class="download"
+					type="button"
+					disabled={!app.file || app.isProcessing}
+					onclick={download}
+				>
+					{#if app.isProcessing}
+						<span class="spinner" aria-hidden="true"></span>
+						Generating…
+					{:else}
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+							<path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+						Download formatted PDF
+					{/if}
 				</button>
-				<p class="privacy">Processing happens in this browser — your PDF never uploads.</p>
+				{#if downloadError}
+					<p class="download-error">{downloadError}</p>
+				{:else}
+					<p class="privacy">Processing happens in this browser — your PDF never uploads.</p>
+				{/if}
 			</div>
 		</div>
 
@@ -421,6 +459,25 @@
 		color: var(--color-ink-muted);
 		text-align: center;
 		font-style: italic;
+	}
+	.download-error {
+		font-size: 0.8125rem;
+		color: var(--color-margin);
+		text-align: center;
+	}
+	.spinner {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		border: 1.5px solid currentColor;
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 720ms linear infinite;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	footer {
